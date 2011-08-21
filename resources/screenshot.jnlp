@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp
+        spec="1.6+"
+        codebase="@jnlp.codebase@" href="screenshot-@version@.jnlp">
+    <information>
+        <title>Screenshot @version@</title>
+        <vendor>Tema</vendor>
+        <homepage href="docs/help.html"/>
+        <description>Take screenshot and share it</description>
+        <icon href="icon.png"/>
+        <offline-allowed/>
+        <shortcut>
+            <desktop/>
+            <menu submenu="Screenshot"/>
+        </shortcut>
+    </information>
+    <security>
+        <all-permissions/>
+    </security>
+    <resources>
+        <j2se version="1.6+" java-vm-args=""/>
+        <property name="jnlp.systemtray.mode" value="@jnlp.systemtray.mode@"/>
+        <property name="jnlp.ftp.url" value="@jnlp.ftp.url@"/>
+        <property name="jnlp.http.base.url" value="@jnlp.http.base.url@"/>
+        <jar href="screenshot-@version@.jar"/>
+    </resources>
+    <application-desc main-class="com.screenshot.Main"/>
+</jnlp>

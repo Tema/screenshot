@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="screenshot" default="deploy">
+
+    <property file="build.properties"/>
+
+    <property name="compile.dir" value="classes"/>
+    <property name="release.dir" value="releases"/>
+    <property name="keystore" value="keystore/testKeystore"/>
+
+    <target name="clean">
+        <delete dir="${compile.dir}"/>
+        <delete dir="${deploy.dir}"/>
+    </target>
+
+    <target name="compile">
+        <mkdir dir="${compile.dir}"/>
+        <javac destdir="${compile.dir}" srcdir="src"/>
+        <copy todir="${compile.dir}" file="resources/icon.png"/>
+    </target>
+
+    <target name="jar">
+        <jar destfile="${deploy.dir}/screenshot-${version}.jar" basedir="${compile.dir}"/>
+        <signjar jar="${deploy.dir}/screenshot-${version}.jar"
+                 alias="testAlias" storepass="testpwd" keystore="${keystore}"/>
+    </target>
+
+    <macrodef name="artifacts">
+        <attribute name="filter" default="dev.properties"/>
+        <sequential>
+            <copy todir="${deploy.dir}" filtering="false">
+                <fileset dir="resources">
+                    <exclude name="screenshot.jnlp"/>
+                </fileset>
+            </copy>
+            <copy file="resources/screenshot.jnlp" filtering="true"
+                  tofile="${deploy.dir}/screenshot-${version}.jnlp">
+                <filterset>
+                    <filtersfile file="@{filter}"/>
+                    <filtersfile file="build.properties"/>
+                </filterset>
+            </copy>
+        </sequential>
+    </macrodef>
+
+    <target name="artifacts">
+        <artifacts filter="dev.properties"/>
+    </target>
+
+    <target name="build" depends="clean, compile, jar"/>
+
+    <target name="deploy" depends="build, artifacts"/>
+
+    <target name="release" depends="build">
+        <artifacts filter="release.properties"/>
+        <tar destfile="${deploy.dir}/screenshot-${version}.tar" basedir="${deploy.dir}"/>
+        <gzip destfile="${release.dir}/screenshot-${version}.tar.gz" src="${deploy.dir}/screenshot-${version}.tar"/>
+    </target>
+
+</project>

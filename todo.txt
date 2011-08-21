@@ -1,0 +1,5 @@
+Logging
+Settings
+speedup rendering
+clipboard mode
+picasaweb http://code.google.com/intl/ru/apis/picasaweb/docs/2.0/developers_guide_java.html tinyurl.com
