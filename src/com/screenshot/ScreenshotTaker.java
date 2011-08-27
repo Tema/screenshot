@@ -1,6 +1,7 @@
 package com.screenshot;
 
 import java.awt.AWTException;
+import java.awt.Desktop;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -10,11 +11,13 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.URI;
 import java.util.UUID;
 
 import com.screenshot.gui.Messenger;
 import com.screenshot.gui.ScreenshotApp;
-import com.screenshot.util.FtpClient;
+import com.screenshot.upload.FtpClient;
+import com.screenshot.upload.PicasaClient;
 import com.screenshot.util.Settings;
 
 public class ScreenshotTaker implements ScreenshotListener {
@@ -41,15 +44,45 @@ public class ScreenshotTaker implements ScreenshotListener {
     @Override
     public void screenshotSelected(BufferedImage img) {
         app.close();
+
+        String url;
+        if (Settings.getInstance().isPicasawebMode()) {
+            url = postToPicasaweb(img);
+        } else {
+            url = sendToFtp(img);
+        }
+
+        if (url != null) {
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(url), null);
+            try {
+                Desktop.getDesktop().browse(new URI(url));
+            } catch (Exception e) {
+                e.printStackTrace();
+                messenger.showError("Can't open URL " + url + ". Error message: "  + e.getMessage());
+            }
+        }
+    }
+
+    private String postToPicasaweb(BufferedImage img) {
+        try {
+            return new PicasaClient().upload(img);
+        } catch (Exception e) {
+            e.printStackTrace();
+            messenger.showError("Can't send screenshot. Reason: '" + e.getMessage() + "'. Check google account settings.");
+            return null;
+        }
+    }
+
+    private String sendToFtp(BufferedImage img) {
         String fileName = UUID.randomUUID().toString() + ".png";
-        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(Settings.getInstance().getHttpBaseUrl() + "/" + fileName), null);
-        messenger.sendingSnapshot();
+        String url = Settings.getInstance().getHttpBaseUrl() + "/" + fileName;
         try {
             new FtpClient().upload(fileName, img);
-            messenger.snapshotIsSent();
+            return url;
         } catch (IOException e) {
-            messenger.showError("Can't send screenshot. Reason: '" + e.getMessage() + "'. Check FTP settings.");
             e.printStackTrace();
+            messenger.showError("Can't send screenshot. Reason: '" + e.getMessage() + "'. Check FTP settings.");
+            return null;
         }
     }
 

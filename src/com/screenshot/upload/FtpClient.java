@@ -1,4 +1,4 @@
-package com.screenshot.util;
+package com.screenshot.upload;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -8,6 +8,8 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import javax.imageio.ImageIO;
+
+import com.screenshot.util.Settings;
 
 public class FtpClient {
 

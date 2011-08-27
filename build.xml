@@ -14,15 +14,24 @@
 
     <target name="compile">
         <mkdir dir="${compile.dir}"/>
-        <javac destdir="${compile.dir}" srcdir="src"/>
+        <javac destdir="${compile.dir}" srcdir="src" classpath="lib/picasaweb-uber.jar"/>
         <copy todir="${compile.dir}" file="resources/icon.png"/>
     </target>
 
-    <target name="jar">
-        <jar destfile="${deploy.dir}/screenshot-${version}.jar" basedir="${compile.dir}"/>
-        <signjar jar="${deploy.dir}/screenshot-${version}.jar"
-                 alias="testAlias" storepass="testpwd" keystore="${keystore}"/>
-    </target>
+    <macrodef name="jarnik">
+        <attribute name="props" default="dev.properties"/>
+        <sequential>
+            <jar destfile="${deploy.dir}/screenshot-${version}.jar" basedir="${compile.dir}">
+                <manifest>
+                    <attribute name="Main-Class" value="com.screenshot.Main"/>
+                </manifest>
+                <zipfileset src="lib/picasaweb-uber.jar"/>
+                <zipfileset dir="." includes="@{props}" fullpath="screenshot.properties"/>
+            </jar>
+            <signjar jar="${deploy.dir}/screenshot-${version}.jar"
+                     alias="testAlias" storepass="testpwd" keystore="${keystore}"/>
+        </sequential>
+    </macrodef>
 
     <macrodef name="artifacts">
         <attribute name="filter" default="dev.properties"/>
@@ -42,15 +51,16 @@
         </sequential>
     </macrodef>
 
-    <target name="artifacts">
+    <target name="build" depends="clean, compile">
+        <jarnik props="dev.properties"/>
+    </target>
+
+    <target name="deploy" depends="build">
         <artifacts filter="dev.properties"/>
     </target>
 
-    <target name="build" depends="clean, compile, jar"/>
-
-    <target name="deploy" depends="build, artifacts"/>
-
-    <target name="release" depends="build">
+    <target name="release" depends="clean, compile">
+        <jarnik props="release.properties"/>
         <artifacts filter="release.properties"/>
         <tar destfile="${deploy.dir}/screenshot-${version}.tar" basedir="${deploy.dir}"/>
         <gzip destfile="${release.dir}/screenshot-${version}.tar.gz" src="${deploy.dir}/screenshot-${version}.tar"/>

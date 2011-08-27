@@ -19,9 +19,16 @@
     </security>
     <resources>
         <j2se version="1.6+" java-vm-args=""/>
+
         <property name="jnlp.systemtray.mode" value="@jnlp.systemtray.mode@"/>
+
         <property name="jnlp.ftp.url" value="@jnlp.ftp.url@"/>
         <property name="jnlp.http.base.url" value="@jnlp.http.base.url@"/>
+
+        <property name="jnlp.picasaweb.mode" value="@jnlp.picasaweb.mode@"/>
+        <property name="jnlp.google.account" value="@jnlp.google.account@"/>
+        <property name="jnlp.google.pwd" value="@jnlp.google.pwd@"/>
+
         <jar href="screenshot-@version@.jar"/>
     </resources>
     <application-desc main-class="com.screenshot.Main"/>

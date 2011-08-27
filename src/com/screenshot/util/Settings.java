@@ -15,17 +15,18 @@ public class Settings {
     }
 
     private Settings() {
-        properties = new Properties(){{
-            try {
-                load(new FileInputStream("dev.properties"));
-            } catch (IOException e) {
-                // use system properties
-            }}
+        properties = new Properties(){
+            {
+                //the later property has higher priority
 
-            @Override
-            public String getProperty(String key) {
-                String value = super.getProperty(key);
-                return value != null ? value : System.getProperty(key);
+                // properties that are packed in jar
+                try {load(getClass().getClassLoader().getResourceAsStream("screenshot.properties"));} catch (Exception e) {/**/}
+                // properties are defined in jnlp
+                putAll(System.getProperties());
+                // properties are stored in home dir (custom user preferences)
+                try {load(new FileInputStream(System.getProperty("user.home") + "/screenshot.properties"));} catch (IOException e) {/**/}
+                // only for dev when app is run from IDE otherwise user.home properties would take affect
+                try {load(new FileInputStream("dev.properties"));} catch (IOException e) {/**/}
             }
         };
     }
@@ -34,11 +35,23 @@ public class Settings {
         return Boolean.valueOf(properties.getProperty("jnlp.systemtray.mode"));
     }
 
+    public boolean isPicasawebMode(){
+        return Boolean.valueOf(properties.getProperty("jnlp.picasaweb.mode"));
+    }
+
     public String getFtpUrl() {
         return properties.getProperty("jnlp.ftp.url");
     }
 
     public String getHttpBaseUrl() {
         return properties.getProperty("jnlp.http.base.url");
+    }
+
+    public String getGoogleAccount() {
+        return properties.getProperty("jnlp.google.account");
+    }
+
+    public String getGooglePwd() {
+        return properties.getProperty("jnlp.google.pwd");
     }
 }
