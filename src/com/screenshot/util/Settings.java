@@ -1,10 +1,13 @@
 package com.screenshot.util;
 
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Properties;
 
 public class Settings {
+
+    private final String FILE_NAME = System.getProperty("user.home") + "/screenshot.properties";
 
     private final static Settings instance = new Settings();
 
@@ -22,9 +25,13 @@ public class Settings {
                 // properties that are packed in jar
                 try {load(getClass().getClassLoader().getResourceAsStream("screenshot.properties"));} catch (Exception e) {/**/}
                 // properties are defined in jnlp
-                putAll(System.getProperties());
+                for (String key : System.getProperties().stringPropertyNames()) {
+                    if (key.startsWith("jnlp.")){
+                        put(key, System.getProperty(key));
+                    }
+                }
                 // properties are stored in home dir (custom user preferences)
-                try {load(new FileInputStream(System.getProperty("user.home") + "/screenshot.properties"));} catch (IOException e) {/**/}
+                try {load(new FileInputStream(FILE_NAME));} catch (IOException e) {/**/}
                 // only for dev when app is run from IDE otherwise user.home properties would take affect
                 try {load(new FileInputStream("dev.properties"));} catch (IOException e) {/**/}
             }
@@ -37,6 +44,11 @@ public class Settings {
 
     public boolean isPicasawebMode(){
         return Boolean.valueOf(properties.getProperty("jnlp.picasaweb.mode"));
+    }
+
+    public void setPicasawebMode(boolean mode){
+        properties.setProperty("jnlp.picasaweb.mode", Boolean.toString(mode));
+        save();
     }
 
     public String getFtpUrl() {
@@ -53,5 +65,13 @@ public class Settings {
 
     public String getGooglePwd() {
         return properties.getProperty("jnlp.google.pwd");
+    }
+
+    public void save(){
+        try {
+            properties.store(new FileWriter(FILE_NAME), "");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
