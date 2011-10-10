@@ -2,10 +2,6 @@ package com.screenshot;
 
 import java.awt.AWTException;
 import java.awt.Desktop;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
@@ -18,6 +14,7 @@ import com.screenshot.gui.Messenger;
 import com.screenshot.gui.ScreenshotApp;
 import com.screenshot.upload.FtpClient;
 import com.screenshot.upload.PicasaClient;
+import com.screenshot.util.ScreenUtils;
 import com.screenshot.util.Settings;
 
 public class ScreenshotTaker implements ScreenshotListener {
@@ -38,7 +35,7 @@ public class ScreenshotTaker implements ScreenshotListener {
     }
 
     public void start(){
-        app = new ScreenshotApp(robot.createScreenCapture(getScreenBounds()), this);
+        app = new ScreenshotApp(robot.createScreenCapture(ScreenUtils.getScreenBounds()), this);
     }
 
     @Override
@@ -91,14 +88,4 @@ public class ScreenshotTaker implements ScreenshotListener {
         app.close();
     }
 
-    private static Rectangle getScreenBounds() {
-        Rectangle virtualBounds = new Rectangle();
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        for (GraphicsDevice gd : ge.getScreenDevices()) {
-            for (GraphicsConfiguration aGc : gd.getConfigurations()) {
-                virtualBounds = virtualBounds.union(aGc.getBounds());
-            }
-        }
-        return virtualBounds;
-    }
 }

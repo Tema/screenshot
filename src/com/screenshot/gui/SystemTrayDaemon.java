@@ -2,6 +2,7 @@ package com.screenshot.gui;
 
 import java.awt.AWTException;
 import java.awt.MenuItem;
+import java.awt.Point;
 import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.TrayIcon;
@@ -17,8 +18,11 @@ import com.screenshot.ScreenshotTaker;
 import com.screenshot.util.Settings;
 
 import static java.awt.event.MouseEvent.BUTTON1;
+import static java.awt.event.MouseEvent.BUTTON3;
 
 public class SystemTrayDaemon {
+
+    private Point mousePoint;
 
     public SystemTrayDaemon() throws AWTException {
         SystemTray tray = SystemTray.getSystemTray();
@@ -43,6 +47,16 @@ public class SystemTrayDaemon {
         });
         popup.add(picasawebItem);
 
+        final SettingsUI settingsUI = new SettingsUI();
+
+        MenuItem settingsItem = new MenuItem(" Settings ");
+        settingsItem.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                settingsUI.open(mousePoint);
+            }
+        });
+        popup.add(settingsItem);
+
         MenuItem exitItem = new MenuItem(" Exit ");
         exitItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -62,6 +76,8 @@ public class SystemTrayDaemon {
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == BUTTON1) {
                     start();
+                } else if (e.getButton() == BUTTON3){
+                    mousePoint = e.getPoint();
                 }
             }
         });

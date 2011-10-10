@@ -74,4 +74,36 @@ public class Settings {
             e.printStackTrace();
         }
     }
+
+    public void setSystemTrayMode(boolean enabled){
+
+    }
+
+    public void setFtpUrl(String url){
+
+    }
+
+    public void setFtpUser(String user){
+
+    }
+
+    public void setFtpPassword(String password){
+
+    }
+
+    public void setHttpBase(String url){
+
+    }
+
+    public void setFtpMode(boolean isFtp){
+
+    }
+
+    public void setPicasawebLogin(String login){
+
+    }
+
+    public void setPicasawebPassword(String password){
+
+    }
 }

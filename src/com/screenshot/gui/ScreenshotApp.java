@@ -1,6 +1,7 @@
 package com.screenshot.gui;
 
 import java.awt.Cursor;
+import java.awt.Rectangle;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
@@ -8,6 +9,7 @@ import java.awt.image.BufferedImage;
 import javax.swing.JFrame;
 
 import com.screenshot.ScreenshotListener;
+import com.screenshot.util.ScreenUtils;
 
 public class ScreenshotApp {
 
@@ -16,7 +18,9 @@ public class ScreenshotApp {
     public ScreenshotApp(BufferedImage screenCapture, ScreenshotListener listener) {
         frame = new JFrame("Screenshot");
         frame.getContentPane().add(new ScreenshotPanel(screenCapture, listener));
-        frame.setSize(screenCapture.getWidth(), screenCapture.getHeight());
+        Rectangle screen = ScreenUtils.getScreenBounds();
+        frame.setLocation(screen.getLocation());
+        frame.setSize(screen.width, screen.height);
         frame.setUndecorated(true);
         frame.getContentPane().setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
 
