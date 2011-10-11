@@ -15,7 +15,6 @@ import com.screenshot.gui.ScreenshotApp;
 import com.screenshot.upload.FtpClient;
 import com.screenshot.upload.PicasaClient;
 import com.screenshot.util.ScreenUtils;
-import com.screenshot.util.Settings;
 
 public class ScreenshotTaker implements ScreenshotListener {
 

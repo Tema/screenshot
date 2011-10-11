@@ -12,7 +12,7 @@ import com.google.gdata.data.media.MediaByteArraySource;
 import com.google.gdata.data.media.MediaSource;
 import com.google.gdata.data.photos.PhotoEntry;
 import com.google.gdata.util.ServiceException;
-import com.screenshot.util.Settings;
+import com.screenshot.Settings;
 
 public class PicasaClient {
 

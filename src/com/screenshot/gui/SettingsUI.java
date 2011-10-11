@@ -5,6 +5,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -20,11 +22,10 @@ import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import com.screenshot.Settings;
 import com.screenshot.util.ScreenUtils;
-import com.screenshot.util.Settings;
 
 import static java.awt.BorderLayout.EAST;
-import static java.awt.BorderLayout.WEST;
 
 public class SettingsUI {
 
@@ -32,18 +33,15 @@ public class SettingsUI {
 
     private JPanel settingPanel = new JPanel();
 
-    private JCheckBox systemTrayModeCheckBox = new JCheckBox("System Tray Mode");
+    private JCheckBox systemTrayModeCheckBox = new JCheckBox("System Tray Mode (restart is required)");
 
     private ButtonGroup tabSwitcher = new ButtonGroup();
 
-    private boolean picasawebMode = Settings.getInstance().isPicasawebMode();
     private JRadioButton ftpRadioButton = new JRadioButton("FTP ");
     private JRadioButton picasawebRadioButton = new JRadioButton("Picasaweb ");
     {
         tabSwitcher.add(ftpRadioButton);
         tabSwitcher.add(picasawebRadioButton);
-        picasawebRadioButton.setSelected(picasawebMode);
-        ftpRadioButton.setSelected(!picasawebMode);
     }
 
     private JPanel transportTab = new JPanel();
@@ -56,11 +54,10 @@ public class SettingsUI {
 
     private JTextField picasawebPassword = new JPasswordField();
 
-    private JButton okButton = new JButton("OK");
+    private JButton okButton = new JButton("Save");
 
     private JButton cancelButton = new JButton("Cancel");
 
-    private JLabel hintLabel = new JLabel(" You can change your settings later");
     GridBagConstraints layout = new GridBagConstraints();
     private int row = 0;
     private final JLabel ftpUrlLabel = new JLabel("URL ");
@@ -71,6 +68,7 @@ public class SettingsUI {
     private final JLabel picasawebPasswordLabel = new JLabel("Password ");
 
     public SettingsUI() {
+        fill();
         frame.setContentPane(settingPanel);
         settingPanel.setLayout(new GridBagLayout());
         layout();
@@ -78,7 +76,21 @@ public class SettingsUI {
         frame.pack();
     }
 
+    private void fill() {
+        Settings settings = Settings.getInstance();
+        systemTrayModeCheckBox.setSelected(settings.isSystemTrayMode());
+        picasawebRadioButton.setSelected(settings.isPicasawebMode());
+        ftpRadioButton.setSelected(!settings.isPicasawebMode());
+        ftpUrl.setText(settings.getFtpUrl());
+        ftpUser.setText(settings.getFtpUser());
+        ftpPassword.setText(settings.getFtpPassword());
+        httpBase.setText(settings.getHttpBaseUrl());
+        picasawebLogin.setText(settings.getGoogleAccount());
+        picasawebPassword.setText(settings.getGooglePwd());
+    }
+
     public void open(Point mouse){
+        switchTab(Settings.getInstance().isPicasawebMode());
         frame.setLocation(ScreenUtils.getPanelLocation(mouse, frame.getWidth(), frame.getHeight()));
         frame.setVisible(true);
     }
@@ -96,8 +108,6 @@ public class SettingsUI {
 
         add(0, sameRow(), 2, layoutTransportTab());
 
-        switchTab(picasawebMode);
-
         add(0, nextRow(), 2, new JLabel(" "));
 
         add(0, nextRow(), 2, layoutButtons());
@@ -111,7 +121,6 @@ public class SettingsUI {
         panel.add(okButton);
         panel.add(cancelButton);
         parentPanel.add(panel, EAST);
-        parentPanel.add(hintLabel, WEST);
         return parentPanel;
     }
 
@@ -146,7 +155,7 @@ public class SettingsUI {
         ftpRadioButton.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                if (picasawebMode && ftpRadioButton.getModel().isSelected()){
+                if (ftpRadioButton.isSelected()){
                     switchTab(false);
                 }
             }
@@ -154,16 +163,45 @@ public class SettingsUI {
         picasawebRadioButton.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                if (!picasawebMode && picasawebRadioButton.getModel().isSelected()){
+                if (picasawebRadioButton.isSelected()){
                     switchTab(true);
                 }
             }
         });
+
+        okButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                save();
+                close();
+            }
+        });
+
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                close();
+            }
+        });
+    }
+
+    private void save() {
+        Settings settings = Settings.getInstance();
+        settings.setPicasawebMode(picasawebRadioButton.isSelected());
+        settings.setSystemTrayMode(systemTrayModeCheckBox.isSelected());
+        settings.setFtpUrl(ftpUrl.getText().trim());
+        settings.setFtpUser(ftpUser.getText().trim());
+        settings.setFtpPassword(ftpPassword.getText().trim());
+        settings.setHttpBase(httpBase.getText().trim());
+        settings.setPicasawebLogin(picasawebLogin.getText().trim());
+        settings.setPicasawebPassword(picasawebPassword.getText().trim());
+        settings.save();
     }
 
     private void switchTab(boolean picasaweb){
-        picasawebMode = picasaweb;
-        enable(picasaweb,  picasawebLogin, picasawebPassword, picasawebLoginLabel, picasawebPasswordLabel);
+        picasawebRadioButton.setSelected(picasaweb);
+        ftpRadioButton.setSelected(!picasaweb);
+        enable(picasaweb, picasawebLogin, picasawebPassword, picasawebLoginLabel, picasawebPasswordLabel);
         enable(!picasaweb, ftpPassword, ftpUrl, ftpUser, httpBase, ftpPasswordLabel, ftpUrlLabel, ftpUserLabel, httpBaseLabel);
     }
 
@@ -202,6 +240,5 @@ public class SettingsUI {
     public static void main(String[] args) {
         new SettingsUI();
     }
-
 
 }

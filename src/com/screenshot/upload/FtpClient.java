@@ -9,7 +9,7 @@ import java.net.URLConnection;
 
 import javax.imageio.ImageIO;
 
-import com.screenshot.util.Settings;
+import com.screenshot.Settings;
 
 public class FtpClient {
 
@@ -17,7 +17,7 @@ public class FtpClient {
 
         OutputStream os = null;
         try {
-            URL url = new URL(Settings.getInstance().getFtpUrl() + "/" + fileName + ";type=i");
+            URL url = new URL(construct() + "/" + fileName + ";type=i");
             URLConnection con = url.openConnection();
             os = con.getOutputStream();
             ImageIO.write(img, "PNG", os);
@@ -31,4 +31,17 @@ public class FtpClient {
         }
 
 }
+
+    private String construct() {
+        Settings settings = Settings.getInstance();
+        String login = "";
+        if (!"".equals(settings.getFtpUser())) {
+            login = settings.getFtpUser() + ":" + settings.getFtpPassword() + "@";
+        }
+        String ftpUrl = settings.getFtpUrl();
+        if (ftpUrl.startsWith("ftp://")){
+            ftpUrl = ftpUrl.substring(6);
+        }
+        return "ftp://" + login + ftpUrl;
+    }
 }
