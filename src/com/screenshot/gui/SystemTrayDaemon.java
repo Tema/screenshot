@@ -25,10 +25,8 @@ import static java.awt.event.MouseEvent.BUTTON1;
 public class SystemTrayDaemon {
 
     private Point mousePoint;
-    private SettingsUI settingsUI;
 
     public SystemTrayDaemon(final SettingsUI settingsUI) throws AWTException {
-        this.settingsUI = settingsUI;
         SystemTray tray = SystemTray.getSystemTray();
 
         PopupMenu popup = new PopupMenu();

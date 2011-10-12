@@ -13,6 +13,5 @@ http://www.pureftpd.org (http://www.linuxcenter.ru/lib/articles/networking/linux
 http://host:port/path_to_dir_with_jnlp_and_jar
 ftp://user:password@host:port/path_to_dir_where_upload_screenshots
 http://host:port/path_to_dir_where_screenshots_are_saved
-If you want system tray app then set jnlp.systemtray.mode=true
 
 5. Give user direct link to JNLP file and advice them to allow create snapshot on first access.

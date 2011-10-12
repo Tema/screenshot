@@ -39,22 +39,28 @@ public class ScreenshotTaker implements ScreenshotListener {
 
     @Override
     public void screenshotSelected(BufferedImage img) {
-        app.close();
+        try {
+            app.close();
 
-        String url;
-        if (Settings.getInstance().isPicasawebMode()) {
-            url = postToPicasaweb(img);
-        } else {
-            url = sendToFtp(img);
-        }
+            String url;
+            if (Settings.getInstance().isPicasawebMode()) {
+                url = postToPicasaweb(img);
+            } else {
+                url = sendToFtp(img);
+            }
 
-        if (url != null) {
-            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(url), null);
-            try {
-                Desktop.getDesktop().browse(new URI(url));
-            } catch (Exception e) {
-                e.printStackTrace();
-                messenger.showError("Can't open URL " + url + ". Error message: "  + e.getMessage());
+            if (url != null) {
+                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(url), null);
+                try {
+                    Desktop.getDesktop().browse(new URI(url));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    messenger.showError("Can't open URL " + url + ". Error message: "  + e.getMessage());
+                }
+            }
+        } finally {
+            if (!Settings.getInstance().isSystemTrayMode()) {
+                System.exit(0);
             }
         }
     }

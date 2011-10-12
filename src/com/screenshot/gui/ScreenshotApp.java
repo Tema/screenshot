@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import javax.swing.JFrame;
 
 import com.screenshot.ScreenshotListener;
+import com.screenshot.Settings;
 import com.screenshot.util.ScreenUtils;
 
 public class ScreenshotApp {
@@ -29,6 +30,9 @@ public class ScreenshotApp {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE){
                     frame.dispose();
+                    if (!Settings.getInstance().isSystemTrayMode()){
+                        System.exit(0);
+                    }
                 }
             }
         });
