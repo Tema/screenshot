@@ -21,14 +21,14 @@
     <macrodef name="jarnik">
         <attribute name="props" default="dev.properties"/>
         <sequential>
-            <jar destfile="${deploy.dir}/screenshot-${version}.jar" basedir="${compile.dir}">
+            <jar destfile="${deploy.dir}/screenshot.jar" basedir="${compile.dir}">
                 <manifest>
                     <attribute name="Main-Class" value="com.screenshot.Main"/>
                 </manifest>
                 <zipfileset src="lib/picasaweb-uber.jar"/>
                 <zipfileset dir="." includes="@{props}" fullpath="screenshot.properties"/>
             </jar>
-            <signjar jar="${deploy.dir}/screenshot-${version}.jar"
+            <signjar jar="${deploy.dir}/screenshot.jar"
                      alias="testAlias" storepass="testpwd" keystore="${keystore}"/>
         </sequential>
     </macrodef>
@@ -42,7 +42,7 @@
                 </fileset>
             </copy>
             <copy file="resources/screenshot.jnlp" filtering="true"
-                  tofile="${deploy.dir}/screenshot-${version}.jnlp">
+                  tofile="${deploy.dir}/screenshot.jnlp">
                 <filterset>
                     <filtersfile file="@{filter}"/>
                     <filtersfile file="build.properties"/>
@@ -62,8 +62,8 @@
     <target name="release" depends="clean, compile">
         <jarnik props="release.properties"/>
         <artifacts filter="release.properties"/>
-        <tar destfile="${deploy.dir}/screenshot-${version}.tar" basedir="${deploy.dir}"/>
-        <gzip destfile="${release.dir}/screenshot-${version}.tar.gz" src="${deploy.dir}/screenshot-${version}.tar"/>
+        <tar destfile="${deploy.dir}/screenshot.tar" basedir="${deploy.dir}"/>
+        <gzip destfile="${release.dir}/screenshot.tar.gz" src="${deploy.dir}/screenshot.tar"/>
     </target>
 
 </project>

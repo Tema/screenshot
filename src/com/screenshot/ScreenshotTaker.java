@@ -41,7 +41,8 @@ public class ScreenshotTaker implements ScreenshotListener {
     public void screenshotSelected(BufferedImage img) {
         try {
             app.close();
-
+            app = null;
+            
             String url;
             if (Settings.getInstance().isPicasawebMode()) {
                 url = postToPicasaweb(img);
@@ -70,7 +71,11 @@ public class ScreenshotTaker implements ScreenshotListener {
             return new PicasaClient().upload(img);
         } catch (Exception e) {
             e.printStackTrace();
-            messenger.showError("Can't send screenshot. Reason: '" + e.getMessage() + "'. Check google account settings.");
+            messenger.showError("Can't send screenshot.\n Reason: '" + e.getMessage() + "'.\n Check google account settings or internet access.");
+            return null;
+        } catch (NoClassDefFoundError error){
+            error.printStackTrace();
+            messenger.showError("Can't send screenshot.\n Reason: '" + error.getMessage() + "'.\n Check google account settings or internet access.");
             return null;
         }
     }
@@ -83,7 +88,7 @@ public class ScreenshotTaker implements ScreenshotListener {
             return url;
         } catch (IOException e) {
             e.printStackTrace();
-            messenger.showError("Can't send screenshot. Reason: '" + e.getMessage() + "'. Check FTP settings.");
+            messenger.showError("Can't send screenshot.\n Reason: '" + e.getMessage() + "'.\n Check FTP settings or internet connection.");
             return null;
         }
     }

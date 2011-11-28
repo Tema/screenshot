@@ -25,8 +25,14 @@ import static java.awt.event.MouseEvent.BUTTON1;
 public class SystemTrayDaemon {
 
     private Point mousePoint;
+    private ScreenshotTaker screenshotTaker;
 
-    public SystemTrayDaemon(final SettingsUI settingsUI) throws AWTException {
+    public SystemTrayDaemon(final SettingsUI settingsUI, ScreenshotTaker screenshotTaker) throws AWTException {
+        this.screenshotTaker = screenshotTaker;
+        init(settingsUI);
+    }
+
+    private void init(final SettingsUI settingsUI) throws AWTException {
         SystemTray tray = SystemTray.getSystemTray();
 
         PopupMenu popup = new PopupMenu();
@@ -78,8 +84,10 @@ public class SystemTrayDaemon {
 
         trayIcon.setImageAutoSize(true);
         trayIcon.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
                 checkMenuItem(picasawebItem, ftpItem, Settings.getInstance().isPicasawebMode());
+            }
+            public void mouseClicked(MouseEvent e) {
                 mousePoint = e.getPoint();
                 if (e.getButton() == BUTTON1) {
                     start();
@@ -96,7 +104,7 @@ public class SystemTrayDaemon {
     }
 
     private void start() {
-        new ScreenshotTaker(new Messenger()).start();
+        screenshotTaker.start();
     }
 
 }

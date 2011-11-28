@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -29,7 +30,7 @@ import static java.awt.BorderLayout.EAST;
 
 public class SettingsUI {
 
-    private final JFrame frame = new JFrame("Settings");
+    private final JFrame frame = new JFrame("Screenshot " + Settings.getInstance().getVersion());
 
     private JPanel settingPanel = new JPanel();
 
@@ -73,6 +74,7 @@ public class SettingsUI {
         settingPanel.setLayout(new GridBagLayout());
         layout();
         bind();
+        frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("icon.png")).getImage());
         frame.pack();
     }
 

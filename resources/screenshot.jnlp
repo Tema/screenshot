@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <jnlp
         spec="1.6+"
-        codebase="@jnlp.codebase@" href="screenshot-@version@.jnlp">
+        codebase="@jnlp.codebase@" href="screenshot.jnlp">
     <information>
-        <title>Screenshot @version@</title>
+        <title>Screenshot</title>
         <vendor>Tema</vendor>
         <homepage href="docs/help.html"/>
         <description>Take screenshot and share it</description>
@@ -18,7 +18,7 @@
         <all-permissions/>
     </security>
     <resources>
-        <j2se version="1.6+" java-vm-args=""/>
+        <j2se version="1.6+" java-vm-args="-Xmx64M"/>
 
         <property name="jnlp.systemtray.mode" value="@jnlp.systemtray.mode@"/>
 
@@ -30,8 +30,10 @@
         <property name="jnlp.picasaweb.mode" value="@jnlp.picasaweb.mode@"/>
         <property name="jnlp.picasaweb.account" value="@jnlp.picasaweb.account@"/>
         <property name="jnlp.picasaweb.pwd" value="@jnlp.picasaweb.pwd@"/>
+        
+        <property name="jnlp.version" value="@version@"/>
 
-        <jar href="screenshot-@version@.jar"/>
+        <jar href="screenshot.jar"/>
     </resources>
     <application-desc main-class="com.screenshot.Main"/>
 </jnlp>

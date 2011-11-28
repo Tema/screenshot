@@ -21,6 +21,7 @@ public class Settings {
     private final String HTTP_BASE_URL = "jnlp.http.base.url";
     private final String PICASAWEB_ACCOUNT = "jnlp.picasaweb.account";
     private final String PICASAWEB_PASSWORD = "jnlp.picasaweb.pwd";
+    private final String VERSION = "jnlp.version";
 
     public static Settings getInstance() {
         return instance;
@@ -121,5 +122,9 @@ public class Settings {
 
     public boolean isPersisted() {
         return new File(FILE_NAME).exists();
+    }
+
+    public String getVersion() {
+        return properties.getProperty(VERSION);
     }
 }
