@@ -63,7 +63,7 @@
         <jarnik props="release.properties"/>
         <artifacts filter="release.properties"/>
         <tar destfile="${deploy.dir}/screenshot.tar" basedir="${deploy.dir}"/>
-        <gzip destfile="${release.dir}/screenshot.tar.gz" src="${deploy.dir}/screenshot.tar"/>
+        <gzip destfile="${release.dir}/screenshot.tar.gz" src="${deploy.dir}/screenshot-@{version}.tar"/>
     </target>
 
 </project>
