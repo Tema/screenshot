@@ -55,9 +55,11 @@ public class SettingsUI {
 
     private JTextField picasawebPassword = new JPasswordField();
 
-    private JButton okButton = new JButton("Save");
+    private JButton saveButton = new JButton("Save");
 
-    private JButton cancelButton = new JButton("Cancel");
+    private final String OK_BUTTON = "OK";
+    
+    private JButton cancelOrOkButton = new JButton("Cancel");
 
     GridBagConstraints layout = new GridBagConstraints();
     private int row = 0;
@@ -94,6 +96,8 @@ public class SettingsUI {
     public void open(Point mouse){
         switchTab(Settings.getInstance().isPicasawebMode());
         frame.setLocation(ScreenUtils.getPanelLocation(mouse, frame.getWidth(), frame.getHeight()));
+        saveButton.setVisible(Settings.getInstance().isPersisted());
+        cancelOrOkButton.setText(Settings.getInstance().isPersisted() ? "Cancel" : OK_BUTTON);
         frame.setVisible(true);
     }
 
@@ -120,8 +124,8 @@ public class SettingsUI {
         parentPanel.setLayout(new BorderLayout());
         JPanel panel = new JPanel();
         panel.setLayout(new GridLayout(1, 2, 5, 0));
-        panel.add(okButton);
-        panel.add(cancelButton);
+        panel.add(saveButton);
+        panel.add(cancelOrOkButton);
         parentPanel.add(panel, EAST);
         return parentPanel;
     }
@@ -171,7 +175,7 @@ public class SettingsUI {
             }
         });
 
-        okButton.addActionListener(new ActionListener() {
+        saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 save();
@@ -179,9 +183,12 @@ public class SettingsUI {
             }
         });
 
-        cancelButton.addActionListener(new ActionListener() {
+        cancelOrOkButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (OK_BUTTON.equals(e.getActionCommand())){
+                    save();
+                }
                 close();
             }
         });

@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.UUID;
 
-import com.screenshot.gui.Messenger;
+import com.screenshot.util.Messenger;
 import com.screenshot.gui.ScreenshotApp;
 import com.screenshot.upload.FtpClient;
 import com.screenshot.upload.PicasaClient;
@@ -27,13 +27,15 @@ public class ScreenshotTaker implements ScreenshotListener {
         try {
             robot = new Robot();
         } catch (AWTException e) {
-            messenger.showError("The platform configuration does not allow low-level input control. Can't take screenshot. Sorry.");
-            e.printStackTrace();
+            messenger.error("The platform configuration does not allow low-level input control. Can't take screenshot. Sorry.", e);
         }
 
     }
 
     public void start(){
+        if (app != null){
+            app.close();
+        }
         app = new ScreenshotApp(robot.createScreenCapture(ScreenUtils.getScreenBounds()), this);
     }
 
@@ -55,8 +57,7 @@ public class ScreenshotTaker implements ScreenshotListener {
                 try {
                     Desktop.getDesktop().browse(new URI(url));
                 } catch (Exception e) {
-                    e.printStackTrace();
-                    messenger.showError("Can't open URL " + url + ". Error message: "  + e.getMessage());
+                    messenger.error("Can't open URL " + url + ". Error message: " + e.getMessage(), e);
                 }
             }
         } finally {
@@ -70,12 +71,10 @@ public class ScreenshotTaker implements ScreenshotListener {
         try {
             return new PicasaClient().upload(img);
         } catch (Exception e) {
-            e.printStackTrace();
-            messenger.showError("Can't send screenshot.\n Reason: '" + e.getMessage() + "'.\n Check google account settings or internet access.");
+            messenger.error("Can't send screenshot.\nReason: '" + e.getMessage() + "'.\nCheck google account settings or internet access.", e);
             return null;
         } catch (NoClassDefFoundError error){
-            error.printStackTrace();
-            messenger.showError("Can't send screenshot.\n Reason: '" + error.getMessage() + "'.\n Check google account settings or internet access.");
+            messenger.error("Can't send screenshot.\nReason: '" + error.getMessage() + "'.\nCheck google account settings or internet access.", error);
             return null;
         }
     }
@@ -87,8 +86,7 @@ public class ScreenshotTaker implements ScreenshotListener {
             new FtpClient().upload(fileName, img);
             return url;
         } catch (IOException e) {
-            e.printStackTrace();
-            messenger.showError("Can't send screenshot.\n Reason: '" + e.getMessage() + "'.\n Check FTP settings or internet connection.");
+            messenger.error("Can't send screenshot.\nReason: '" + e.getMessage() + "'.\nCheck FTP settings or internet connection.", e);
             return null;
         }
     }

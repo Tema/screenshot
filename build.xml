@@ -5,33 +5,38 @@
 
     <property name="compile.dir" value="classes"/>
     <property name="release.dir" value="releases"/>
+    <property name="deploy.dir" value="deploy"/>
     <property name="keystore" value="keystore/testKeystore"/>
 
     <target name="clean">
         <delete dir="${compile.dir}"/>
-        <delete dir="${deploy.dir}"/>
     </target>
 
-    <target name="compile">
-        <mkdir dir="${compile.dir}"/>
-        <javac destdir="${compile.dir}" srcdir="src" classpath="lib/picasaweb-uber.jar"/>
-        <copy todir="${compile.dir}" file="resources/icon.png"/>
-    </target>
-
-    <macrodef name="jarnik">
+    <macrodef name="compile">
         <attribute name="props" default="dev.properties"/>
         <sequential>
-            <jar destfile="${deploy.dir}/screenshot.jar" basedir="${compile.dir}">
-                <manifest>
-                    <attribute name="Main-Class" value="com.screenshot.Main"/>
-                </manifest>
-                <zipfileset src="lib/picasaweb-uber.jar"/>
-                <zipfileset dir="." includes="@{props}" fullpath="screenshot.properties"/>
-            </jar>
-            <signjar jar="${deploy.dir}/screenshot.jar"
-                     alias="testAlias" storepass="testpwd" keystore="${keystore}"/>
+            <mkdir dir="${compile.dir}"/>
+            <javac destdir="${compile.dir}" srcdir="src" classpath="lib/picasaweb-uber.jar"/>
+            <copy todir="${compile.dir}" file="resources/icon.png"/>
+            <copy file="@{props}" filtering="true"
+                  tofile="${compile.dir}/screenshot.properties">
+                <filterset>
+                    <filtersfile file="build.properties"/>
+                </filterset>
+            </copy>
         </sequential>
     </macrodef>
+
+    <target name="jarnik">
+        <jar destfile="${deploy.dir}/screenshot.jar" basedir="${compile.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="com.screenshot.Main"/>
+            </manifest>
+            <zipfileset src="lib/picasaweb-uber.jar"/>
+        </jar>
+        <signjar jar="${deploy.dir}/screenshot.jar"
+                 alias="testAlias" storepass="testpwd" keystore="${keystore}"/>
+    </target>
 
     <macrodef name="artifacts">
         <attribute name="filter" default="dev.properties"/>
@@ -50,20 +55,24 @@
             </copy>
         </sequential>
     </macrodef>
-
-    <target name="build" depends="clean, compile">
-        <jarnik props="dev.properties"/>
+    
+    <target name="build" depends="clean">
+        <compile props="dev.properties"/>
     </target>
 
     <target name="deploy" depends="build">
+        <delete dir="${deploy.dir}"/>
+        <ant target="jarnik"/>
         <artifacts filter="dev.properties"/>
     </target>
 
-    <target name="release" depends="clean, compile">
-        <jarnik props="release.properties"/>
+    <target name="release" depends="clean">
+        <delete dir="${deploy.dir}"/>
+        <compile props="release.properties"/>
+        <ant target="jarnik"/>
         <artifacts filter="release.properties"/>
         <tar destfile="${deploy.dir}/screenshot.tar" basedir="${deploy.dir}"/>
-        <gzip destfile="${release.dir}/screenshot.tar.gz" src="${deploy.dir}/screenshot-@{version}.tar"/>
+        <gzip destfile="${release.dir}/screenshot-${version}.tar.gz" src="${deploy.dir}/screenshot.tar"/>
     </target>
 
 </project>

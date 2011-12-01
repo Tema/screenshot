@@ -38,6 +38,7 @@ public class ScreenshotApp {
         });
 
         frame.setVisible(true);
+        frame.toFront();
     }
 
     public void close(){

@@ -22,6 +22,7 @@ public class Settings {
     private final String PICASAWEB_ACCOUNT = "jnlp.picasaweb.account";
     private final String PICASAWEB_PASSWORD = "jnlp.picasaweb.pwd";
     private final String VERSION = "jnlp.version";
+    private final String DEV_MODE = "dev.mode";
 
     public static Settings getInstance() {
         return instance;
@@ -40,15 +41,17 @@ public class Settings {
                         put(key, System.getProperty(key));
                     }
                 }
-                // properties are stored in home dir (custom user preferences)
-                try {load(new FileInputStream(FILE_NAME));} catch (IOException e) {/**/}
-                // only for dev when app is run from IDE otherwise user.home properties would take affect
-                try {load(new FileInputStream("dev.properties"));} catch (IOException e) {/**/}
+                if (!"true".equals(getProperty(DEV_MODE))) {
+                    // properties are stored in home dir (custom user preferences)
+                    try {load(new FileInputStream(FILE_NAME));} catch (IOException e) {/**/}
+                }
             }
         };
     }
 
     public void save(){
+        if (isDevMode()) return;
+        
         try {
             properties.store(new FileWriter(FILE_NAME), "");
         } catch (IOException e) {
@@ -126,5 +129,9 @@ public class Settings {
 
     public String getVersion() {
         return properties.getProperty(VERSION);
+    }
+    
+    public boolean isDevMode() {
+        return "true".equals(properties.getProperty(DEV_MODE));
     }
 }
