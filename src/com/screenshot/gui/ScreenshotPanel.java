@@ -1,8 +1,10 @@
 package com.screenshot.gui;
 
+import java.awt.AWTException;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Robot;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -13,6 +15,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 import com.screenshot.ScreenshotListener;
+import com.screenshot.util.Messenger;
+import com.screenshot.util.ScreenUtils;
 
 public class ScreenshotPanel extends JLabel implements MouseListener, MouseMotionListener{
 
@@ -23,13 +27,28 @@ public class ScreenshotPanel extends JLabel implements MouseListener, MouseMotio
     private ScreenshotListener screenshotListener;
     private BufferedImage screenCapture;
     private BufferedImage selectedImage;
+    private Robot robot;
 
-    public ScreenshotPanel(BufferedImage screenCapture, ScreenshotListener screenshotListener) {
-        this.screenCapture = screenCapture;
-        setIcon(new ImageIcon(new RescaleOp(DARK_FACTOR, 0, null).filter(this.screenCapture, null)));
+    public ScreenshotPanel(ScreenshotListener screenshotListener, Messenger messenger) {
+        try {
+            robot = new Robot();
+        } catch (AWTException e) {
+            messenger.error("The platform configuration does not allow low-level input control. Can't take screenshot. Sorry.", e);
+        }
         this.screenshotListener = screenshotListener;
         addMouseListener(this);
         addMouseMotionListener(this);
+    }
+
+    public void init(){
+        this.screenCapture = robot.createScreenCapture(ScreenUtils.getScreenBounds());
+        setIcon(new ImageIcon(new RescaleOp(DARK_FACTOR, 0, null).filter(this.screenCapture, null)));
+    }
+
+    public void clear() {
+        screenCapture = null;
+        startPoint = endPoint = null;
+        setIcon(null);
     }
 
     @Override

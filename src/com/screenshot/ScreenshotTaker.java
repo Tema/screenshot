@@ -1,8 +1,6 @@
 package com.screenshot;
 
-import java.awt.AWTException;
 import java.awt.Desktop;
-import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.datatransfer.StringSelection;
 import java.awt.image.BufferedImage;
@@ -10,40 +8,29 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.UUID;
 
-import com.screenshot.util.Messenger;
 import com.screenshot.gui.ScreenshotApp;
 import com.screenshot.upload.FtpClient;
 import com.screenshot.upload.PicasaClient;
-import com.screenshot.util.ScreenUtils;
+import com.screenshot.util.Messenger;
 
 public class ScreenshotTaker implements ScreenshotListener {
 
-    public Robot robot;
     private Messenger messenger;
     private ScreenshotApp app;
 
     public ScreenshotTaker(Messenger messenger) {
         this.messenger = messenger;
-        try {
-            robot = new Robot();
-        } catch (AWTException e) {
-            messenger.error("The platform configuration does not allow low-level input control. Can't take screenshot. Sorry.", e);
-        }
-
+        app = new ScreenshotApp(this, messenger);
     }
 
     public void start(){
-        if (app != null){
-            app.close();
-        }
-        app = new ScreenshotApp(robot.createScreenCapture(ScreenUtils.getScreenBounds()), this);
+        app.open();    
     }
 
     @Override
     public void screenshotSelected(BufferedImage img) {
         try {
             app.close();
-            app = null;
             
             String url;
             if (Settings.getInstance().isPicasawebMode()) {
