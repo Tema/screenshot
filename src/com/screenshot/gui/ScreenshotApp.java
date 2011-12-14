@@ -1,7 +1,10 @@
 package com.screenshot.gui;
 
 import java.awt.Cursor;
+import java.awt.Frame;
 import java.awt.Rectangle;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -26,12 +29,17 @@ public class ScreenshotApp {
         frame.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ESCAPE){
-                    frame.dispose();
-                    if (!Settings.getInstance().isSystemTrayMode()){
-                        System.exit(0);
-                    }
+                if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    close();
                 }
+            }
+        });
+        frame.addFocusListener(new FocusListener() {
+            public void focusGained(FocusEvent e) {
+            }
+
+            public void focusLost(FocusEvent e) {
+                close();
             }
         });
     }
@@ -41,13 +49,17 @@ public class ScreenshotApp {
         Rectangle screen = ScreenUtils.getScreenBounds();
         frame.setLocation(screen.getLocation());
         frame.setSize(screen.width, screen.height);
+        frame.setState(Frame.NORMAL);
         frame.setVisible(true);
-        frame.toFront();
+        frame.setVisible(true);//it's not typo; need to call it twice for iconified window
     }
 
-    public void close(){
+    public void close() {
         screenshotPanel.clear();
         frame.setVisible(false);
+        if (!Settings.getInstance().isSystemTrayMode()) {
+            System.exit(0);
+        }
     }
 
 }

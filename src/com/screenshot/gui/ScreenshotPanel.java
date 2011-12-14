@@ -20,7 +20,7 @@ import com.screenshot.util.ScreenUtils;
 
 public class ScreenshotPanel extends JLabel implements MouseListener, MouseMotionListener{
 
-    private static final float DARK_FACTOR = 0.75f;
+    private static final float DARK_FACTOR = 0.6f;
 
     private Point startPoint;
     private Point endPoint;
