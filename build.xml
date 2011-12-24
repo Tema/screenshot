@@ -75,4 +75,14 @@
         <gzip destfile="${release.dir}/screenshot-${version}.tar.gz" src="${deploy.dir}/screenshot.tar"/>
     </target>
 
+    <!-- exe/readme.txt -->
+    
+    <target name="exe-create">
+        <exec command="${jsmooth_path}\jsmoothcmd.exe exe\screenshot.jsmooth"/>
+    </target>
+
+    <target name="exe-setup">
+        <exec command="${jsmooth_path}\jsmoothgen.exe exe\screenshot.jsmooth"/>
+    </target>
+
 </project>
