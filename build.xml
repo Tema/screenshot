@@ -71,6 +71,7 @@
         <compile props="release.properties"/>
         <ant target="jarnik"/>
         <artifacts filter="release.properties"/>
+        <ant target="exe-create"/>
         <tar destfile="${deploy.dir}/screenshot.tar" basedir="${deploy.dir}"/>
         <gzip destfile="${release.dir}/screenshot-${version}.tar.gz" src="${deploy.dir}/screenshot.tar"/>
     </target>
