@@ -32,8 +32,6 @@ public class ScreenshotTaker implements ScreenshotListener {
     @Override
     public void screenshotSelected(BufferedImage img) {
         try {
-            app.close("snapshot is took", false);
-            
             String url;
             if (Settings.getInstance().isPicasawebMode()) {
                 url = postToPicasaweb(img);
@@ -50,9 +48,7 @@ public class ScreenshotTaker implements ScreenshotListener {
                 }
             }
         } finally {
-            if (!Settings.getInstance().isSystemTrayMode()) {
-                System.exit(0);
-            }
+            app.close("snapshot is took", false);
         }
     }
 
