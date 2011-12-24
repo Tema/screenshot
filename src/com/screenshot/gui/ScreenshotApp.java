@@ -1,14 +1,10 @@
 package com.screenshot.gui;
 
 import java.awt.Cursor;
-import java.awt.Frame;
 import java.awt.Rectangle;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 
-import javax.swing.JFrame;
+import javax.swing.*;
 
 import com.screenshot.ScreenshotListener;
 import com.screenshot.Settings;
@@ -19,8 +15,11 @@ public class ScreenshotApp {
 
     private final JFrame frame;
     ScreenshotPanel screenshotPanel;
+    private final Messenger messenger;
+    private boolean closed = false;
 
     public ScreenshotApp(ScreenshotListener listener, Messenger messenger) {
+        this.messenger = messenger;
         frame = new JFrame("Screenshot");
         screenshotPanel = new ScreenshotPanel(listener, messenger);
         frame.getContentPane().add(screenshotPanel);
@@ -30,36 +29,67 @@ public class ScreenshotApp {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                    close();
+                    close("ESC button", false);
                 }
             }
         });
-        frame.addFocusListener(new FocusListener() {
-            public void focusGained(FocusEvent e) {
-            }
-
+        frame.addFocusListener(new FocusAdapter() {
             public void focusLost(FocusEvent e) {
-                close();
+                close("focus lost", false);
             }
         });
+        frame.addWindowListener(new WindowAdapter() {
+            public void windowIconified(WindowEvent e) {
+                close("inconified", false);
+            }
+        });      
+        open();
     }
 
-    public void open() {
-        screenshotPanel.init();
+    private void open() {
         Rectangle screen = ScreenUtils.getScreenBounds();
         frame.setLocation(screen.getLocation());
         frame.setSize(screen.width, screen.height);
-        frame.setState(Frame.NORMAL);
         frame.setVisible(true);
-        frame.setVisible(true);//it's not typo; need to call it twice for iconified window
+        //If we don't dispose but simply hide window between snapshots 
+        // then we need the code below to cope with iconified windows
+        //frame.setState(Frame.NORMAL);
+        //frame.setVisible(true);
+        //frame.setVisible(true);
     }
 
-    public void close() {
+    public void close(String reason, boolean synchGC) {
+        if (closed){
+            return;
+        } else {
+            closed = true;
+        }
+        messenger.debug("Window is closed: " + reason);
         screenshotPanel.clear();
-        frame.setVisible(false);
-        if (!Settings.getInstance().isSystemTrayMode()) {
+        frame.dispose();
+        if (Settings.getInstance().isSystemTrayMode()) {
+            // need explicit GC for two reason
+            // first keep heap small and don't waste PC memory
+            // second avoid OOM in case of abnormal frequent user clicks
+            if (synchGC) {
+                GC.run();
+            } else {
+                SwingUtilities.invokeLater(GC);
+            }
+        } else {
             System.exit(0);
         }
     }
+
+    private final static Runnable GC = new Runnable() {
+        public void run() {
+            System.gc();
+            try {
+                Thread.sleep(100L);
+            } catch (InterruptedException e) {
+                //ignore
+            }
+        }
+    };
 
 }

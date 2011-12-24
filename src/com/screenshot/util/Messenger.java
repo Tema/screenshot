@@ -24,8 +24,10 @@ public class Messenger implements Thread.UncaughtExceptionHandler {
         }
     }
     
-    public void info(String msg){
-        System.out.println(msg);    
+    public void debug(String msg){
+        if (Settings.getInstance().isDevMode()) {
+            System.out.println(msg);
+        }
     }
     
     public void error(String msg, Throwable th) {

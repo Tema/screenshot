@@ -36,11 +36,12 @@ public class ScreenshotPanel extends JLabel implements MouseListener, MouseMotio
             messenger.error("The platform configuration does not allow low-level input control. Can't take screenshot. Sorry.", e);
         }
         this.screenshotListener = screenshotListener;
+        init();
         addMouseListener(this);
         addMouseMotionListener(this);
     }
 
-    public void init(){
+    private void init(){
         this.screenCapture = robot.createScreenCapture(ScreenUtils.getScreenBounds());
         setIcon(new ImageIcon(new RescaleOp(DARK_FACTOR, 0, null).filter(this.screenCapture, null)));
     }
