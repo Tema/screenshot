@@ -24,7 +24,7 @@ public class ScreenshotTaker implements ScreenshotListener {
 
     public void start(){
         if (app != null) {
-            app.close("Start new", true);
+            app.close("Start new", true, false);
         }
         app = new ScreenshotApp(this, messenger);    
     }
@@ -32,6 +32,7 @@ public class ScreenshotTaker implements ScreenshotListener {
     @Override
     public void screenshotSelected(BufferedImage img) {
         try {
+            app.close("snapshot is took", false, false);
             String url;
             if (Settings.getInstance().isPicasawebMode()) {
                 url = postToPicasaweb(img);
@@ -48,7 +49,9 @@ public class ScreenshotTaker implements ScreenshotListener {
                 }
             }
         } finally {
-            app.close("snapshot is took", false);
+            if (!Settings.getInstance().isSystemTrayMode()) {
+                System.exit(0);
+            }
         }
     }
 
@@ -78,7 +81,7 @@ public class ScreenshotTaker implements ScreenshotListener {
 
     @Override
     public void screenshotCancelled() {
-        app.close("screenshot is cancelled", false);
+        app.close("screenshot is cancelled", false, true);
     }
 
 }

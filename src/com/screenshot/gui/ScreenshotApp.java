@@ -29,18 +29,18 @@ public class ScreenshotApp {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                    close("ESC button", false);
+                    close("ESC button");
                 }
             }
         });
         frame.addFocusListener(new FocusAdapter() {
             public void focusLost(FocusEvent e) {
-                close("focus lost", false);
+                close("focus lost");
             }
         });
         frame.addWindowListener(new WindowAdapter() {
             public void windowIconified(WindowEvent e) {
-                close("inconified", false);
+                close("inconified");
             }
         });      
         open();
@@ -58,7 +58,11 @@ public class ScreenshotApp {
         //frame.setVisible(true);
     }
 
-    public void close(String reason, boolean synchGC) {
+    public void close(String reason){
+        close(reason, false, true);
+    }
+
+    public void close(String reason, boolean synchGC, boolean exit) {
         if (closed){
             return;
         } else {
@@ -76,7 +80,7 @@ public class ScreenshotApp {
             } else {
                 SwingUtilities.invokeLater(GC);
             }
-        } else {
+        } else if (exit) {
             System.exit(0);
         }
     }
